@@ -17,6 +17,7 @@ public class User {
         this.telefone = telefone;
         this.dataNascimento = dataNascimento;
         this.endereco = endereco;
+
     }
 
     // Getters e Setters
