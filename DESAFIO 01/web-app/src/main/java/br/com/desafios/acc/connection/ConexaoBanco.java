@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+
 //classe para gerenciar a conexao com o bd
 
 public class ConexaoBanco {
