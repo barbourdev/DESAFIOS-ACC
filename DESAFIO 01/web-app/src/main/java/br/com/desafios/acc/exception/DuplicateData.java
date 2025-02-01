@@ -14,9 +14,9 @@ public class DuplicateData implements ExceptionMapper<SQLIntegrityConstraintViol
 
         //testa se a mensagem de erro do banco indica duplicidade (chave única)
         if (exception.getMessage().contains("Duplicate entry")) {
-            mensagem += "Este e-mail já está cadastrado.";
+            mensagem += "Este e-mail já está cadastrado";
         } else {
-            mensagem += "Violação de restrição no banco de dados.";
+            mensagem += "Violação de restrição no banco de dados";
         }
 
         return Response.status(Response.Status.BAD_REQUEST)
