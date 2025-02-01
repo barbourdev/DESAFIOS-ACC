@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/style.css">
+    <title>Web APP</title>
+</head>
+<body>
+
+    <h1>Gerenciamento de Usuários</h1>
+
+
+    <h2 id="formTitle">Adicionar Novo Usuário</h2>
+    <form id="userForm">
+        <input type="hidden" id="idUsuario">
+        <input type="text" id="nome" placeholder="Nome" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="text" id="telefone" placeholder="Telefone" required>
+        <input type="date" id="dataNascimento" required>
+        <input type="text" id="endereco" placeholder="Endereço" required>
+        <button type="submit" id="submitButton">Adicionar Usuário</button>
+        <button type="button" id="cancelButton" style="display:none;" onclick="cancelEdit()">Cancelar</button>
+    </form>
+
+    <p class="error" id="errorMessage"></p>
+
+
+    <h2>Lista de Usuários</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>Data de Nascimento</th>
+                <th>Endereço</th>
+                <th>Opções</th>
+            </tr>
+        </thead>
+        <tbody id="userTable">
+
+        </tbody>
+    </table>
+
+    <script>
+        // endpoint disponibilizado pelo java
+        const API_URL = "http://localhost:8080/usuarios";
+
+        function carregarUsuarios() {
+            fetch(API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    const tabela = document.getElementById("userTable");
+                    tabela.innerHTML = "";
+                    data.forEach(user => {
+                        const row = `<tr>
+                            <td>${user.id}</td>
+                            <td>${user.nome}</td>
+                            <td>${user.email}</td>
+                            <td>${user.telefone}</td>
+                            <td>${user.dataNascimento}</td>
+                            <td>${user.endereco}</td>
+                            <td>
+                                <button onclick="editarUsuario(${user.id}, '${user.nome}', '${user.email}', '${user.telefone}', '${user.dataNascimento}', '${user.endereco}')">Editar</button>
+                                <button onclick="excluirUsuario(${user.id})">Excluir</button>
+                            </td>
+                        </tr>`;
+                        tabela.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error("Erro ao carregar usuarios:", error));
+        }
+
+        function validarFormulario(usuario) {
+            const errorMessage = document.getElementById("errorMessage");
+            errorMessage.innerText = "";
+
+            if (!usuario.nome || !usuario.email || !usuario.telefone || !usuario.dataNascimento || !usuario.endereco) {
+                errorMessage.innerText = "Todos os campos sao obrigatórios";
+                return false;
+            }
+
+            const dataNascimento = new Date(usuario.dataNascimento);
+            const dataAtual = new Date();
+            if (dataNascimento >= dataAtual) {
+                errorMessage.innerText = "A data de nascimento deve ser menor da data atual";
+                return false;
+            }
+
+            return true;
+        }
+
+        document.getElementById("userForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const idUsuario = document.getElementById("idUsuario").value;
+            const usuario = {
+                nome: document.getElementById("nome").value.trim(),
+                email: document.getElementById("email").value.trim(),
+                telefone: document.getElementById("telefone").value.trim(),
+                dataNascimento: document.getElementById("dataNascimento").value,
+                endereco: document.getElementById("endereco").value.trim()
+            };
+
+            if (!validarFormulario(usuario)) return;
+
+            const metodo = idUsuario ? "PUT" : "POST";
+            const url = idUsuario ? `${API_URL}/${idUsuario}` : API_URL;
+
+            try {
+                const response = await fetch(url, {
+                    method: metodo,
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(usuario)
+                });
+
+                let data = null;
+                const contentType = response.headers.get("Content-Type");
+                if (contentType && contentType.includes("application/json")) {
+                    data = await response.json();
+                }
+
+                if (!response.ok) {
+                    throw new Error(data?.error || "Erro desconhecido");
+                }
+
+                carregarUsuarios();
+                resetForm();
+                document.getElementById("errorMessage").innerText = "";
+
+            } catch (error) {
+                document.getElementById("errorMessage").innerText = error.message;
+            }
+        });
+
+
+        function editarUsuario(id, nome, email, telefone, dataNascimento, endereco) {
+            document.getElementById("idUsuario").value = id;
+            document.getElementById("nome").value = nome;
+            document.getElementById("email").value = email;
+            document.getElementById("telefone").value = telefone;
+            document.getElementById("dataNascimento").value = dataNascimento;
+            document.getElementById("endereco").value = endereco;
+
+            document.getElementById("formTitle").innerText = "Editar Usuário";
+            document.getElementById("submitButton").innerText = "Atualizar Usuário";
+            document.getElementById("cancelButton").style.display = "inline-block";
+        }
+
+        function cancelEdit() {
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById("idUsuario").value = "";
+            document.getElementById("userForm").reset();
+            document.getElementById("formTitle").innerText = "Adicionar Novo Usuário";
+            document.getElementById("submitButton").innerText = "Adicionar Usuário";
+            document.getElementById("cancelButton").style.display = "none";
+            document.getElementById("errorMessage").innerText = "";
+        }
+
+
+        function excluirUsuario(id) {
+            if (confirm("Tem certeza que deseja excluir o usuário?")) {
+                fetch(`${API_URL}/${id}`, { method: "DELETE" })
+                    .then(response => {
+                        if (response.ok) carregarUsuarios();
+                        else console.error("Erro ao excluir usuário");
+                    })
+                    .catch(error => console.error("Erro ao excluir usuario:", error));
+            }
+        }
+
+        // carrega os usuarios ao iniciar a pagina
+        carregarUsuarios();
+    </script>
+
+</body>
+</html>
