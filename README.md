@@ -42,7 +42,7 @@ Excluir usuários do sistema
    cd DESAFIOS-ACC/DESAFIO\ 01/web-app/
    ```
 2. **Configure o banco de dados MySQL**
-   - Nome do banco: `desafio01`
+   - Nome do banco: `crud_usuarios`
    - Tabela `usuario`:
      ```sql
      CREATE TABLE usuario (
