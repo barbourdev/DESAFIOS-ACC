@@ -79,15 +79,26 @@ Este desafio é um **projeto backend** que importa dados de um arquivo CSV para 
    git clone https://github.com/seu-usuario/DESAFIOS-ACC.git
    cd DESAFIOS-ACC/DESAFIO\ 02/leitor-extrator/
    ```
-2. **Compile e execute o projeto**
+2. **Configure o banco de dados MySQL**
+   - Nome do banco: `desafio02`
+   - Tabela `users`:
+     ```sql
+     CREATE TABLE users (
+         id INT AUTO_INCREMENT PRIMARY KEY,
+         nome VARCHAR(50),
+         email VARCHAR(255),
+         telefone VARCHAR(50)
+     );
+     ```
+3. **Compile e execute o projeto**
 
-3. **Importar CSV:** O projeto espera um arquivo `lista.csv` no diretório base. O formato esperado:
+4. **Importar CSV:** O projeto espera um arquivo `lista.csv` no diretório base. O formato esperado:
    ```csv
    nome;email;telefone
    Rafael;rafael@email.com;11999999999
    Ana;ana@email.com;11988888888
    ```
-4. **Exportar TXT:** O projeto gerará um arquivo `saida.txt` com os dados separados por `#`:
+5. **Exportar TXT:** O projeto gerará um arquivo `saida.txt` com os dados separados por `#`:
    ```txt
    Rafael#rafael@email.com#11999999999
    Ana#ana@email.com#11988888888
