@@ -16,6 +16,7 @@ public class UserResource {
     private UserDao userDao = new UserDao();
 
     //metodo GET para listar usuarios
+
     @GET
     public Response getAllUsers() {
         try {
