@@ -27,6 +27,7 @@ public class Main {
             Thread.currentThread().join();
         } catch (InterruptedException e) {
             e.printStackTrace();
+
         }
     }
 }
